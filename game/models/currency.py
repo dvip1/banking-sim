@@ -1,0 +1,24 @@
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import ForeignKey
+from typing import Optional, TYPE_CHECKING
+from ..database import Base
+
+if TYPE_CHECKING:
+    from .empire import Empire
+
+class Currency(Base):
+    __tablename__ = "currencies"
+    
+    id: Mapped[int] = mapped_column(primary_key=True)
+    empire_id: Mapped[Optional[int]] = mapped_column(ForeignKey("empires.id"), nullable=True)
+    name: Mapped[str]
+    symbol: Mapped[str]
+
+    empire: Mapped[Optional["Empire"]] = relationship(back_populates="currencies")
+
+    def __init__(self, name:str, symbol:str, empire_id: Optional[int] = None):
+        self.name = name
+        self.symbol = symbol
+        self.empire_id = empire_id
+
+    
