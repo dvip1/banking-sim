@@ -13,6 +13,8 @@ class Currency(Base):
     empire_id: Mapped[Optional[int]] = mapped_column(ForeignKey("empires.id"), nullable=True)
     name: Mapped[str]
     symbol: Mapped[str]
+    is_baseline: Mapped[bool] = mapped_column(default=False)
+    exchange_rate: Mapped[float] = mapped_column(default=1.0)
 
     empire: Mapped[Optional["Empire"]] = relationship(back_populates="currencies")
 

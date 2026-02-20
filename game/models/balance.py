@@ -20,3 +20,5 @@ class EmpireBalance(Base):
 
     def __repr__(self):
         return f"<EmpireBalance(empire={self.empire_id}, currency={self.currency_id}, amount={self.amount})>"
+    
+

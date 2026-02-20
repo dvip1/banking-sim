@@ -103,7 +103,7 @@ class Asset(Base):
         }
         return info
 
-    def invest_in_research(self, gold_amount, workers):
+    def invest_in_research(self, amount, workers):
         """
         Empire calls this to advance research.
         TODO: Implement formula for how much progress 'gold + workers' buys.
@@ -113,7 +113,6 @@ class Asset(Base):
             return "Already Researched"
         
         # Placeholder
-        print(f"Investing {gold_amount} Gold and {workers} Workers...")
         pass
 
     def produce(self, quantity, gold_available, workers):

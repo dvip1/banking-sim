@@ -60,6 +60,16 @@ class Empire(Base):
         # keeping it simple for now, using population as workers
         self.population = max(0, self.population)
         return self.population   
+
+    @property
+    def total_wealth(self) -> float:
+        """
+        Calculates the total wealth of the empire converted to the baseline currency.
+        Assumes that the baseline currency has exchange_rate = 1.0 (or logic handles conversion relative to it).
+        Row-level calculation: balance.amount * balance.currency.exchange_rate
+        """
+        return sum(b.amount * b.currency.exchange_rate for b in self.balances)
+    
     
     # modify_gold removed/commented out as it requires session/currency access. 
     # Logic should be handled by a service or controller.
