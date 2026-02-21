@@ -18,9 +18,11 @@ class Currency(Base):
 
     empire: Mapped[Optional["Empire"]] = relationship(back_populates="currencies")
 
-    def __init__(self, name:str, symbol:str, empire_id: Optional[int] = None):
+    def __init__(self, name:str, symbol:str, empire_id: Optional[int] = None, is_baseline: bool = False, exchange_rate: float = 1.0):
         self.name = name
         self.symbol = symbol
         self.empire_id = empire_id
+        self.is_baseline = is_baseline
+        self.exchange_rate = exchange_rate
 
     

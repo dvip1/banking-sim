@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
 from typing import TYPE_CHECKING
+from ..services.currency_service import CurrencyService
 
 from ..database import Base
 
@@ -21,4 +22,5 @@ class EmpireBalance(Base):
     def __repr__(self):
         return f"<EmpireBalance(empire={self.empire_id}, currency={self.currency_id}, amount={self.amount})>"
     
+      
 

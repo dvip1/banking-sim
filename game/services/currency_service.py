@@ -1,6 +1,10 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select
+from typing import TYPE_CHECKING
 from ..models.currency import Currency
+
+if TYPE_CHECKING:
+    from ..models.empire import Empire
 
 class CurrencyService:
     @staticmethod
@@ -36,3 +40,14 @@ class CurrencyService:
         
         # Convert baseline value to target currency (Value / TargetRate)
         return baseline_value / to_currency.exchange_rate
+
+    @staticmethod
+    def per_capita_all_currencies(empire: "Empire") -> float:
+        """
+        Calculates the per capita wealth of an empire across all its currencies.
+        """
+        total_wealth = 0
+        for balance in empire.balances:
+            total_wealth += balance.amount * balance.currency.exchange_rate
+        return total_wealth / empire.population
+    
