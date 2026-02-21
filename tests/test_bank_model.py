@@ -35,26 +35,26 @@ class TestBankModel(unittest.TestCase):
         self.session.commit()
 
         # Create Bank
-        bank = Bank(empire=empire)
+        bank = Bank(empire=empire, session=self.session)
         self.session.add(bank)
         self.session.commit()
         
         self.assertIsNotNone(empire.bank)
         print("Bank created and linked to Empire.")
 
-        # Deposit
-        bank.deposit(currency, 100.0)
-        self.assertEqual(bank.get_balance(currency), 100.0)
+        # Deposit (no currency specified -> baseline)
+        bank.deposit(None, 100.0)
+        self.assertEqual(bank.get_balance(None), 100.0)
         print("Deposited 100.0 Gold.")
 
-        # Withdraw
-        bank.withdraw(currency, 50.0)
-        self.assertEqual(bank.get_balance(currency), 50.0)
+        # Withdraw (no currency specified -> baseline)
+        bank.withdraw(None, 50.0)
+        self.assertEqual(bank.get_balance(None), 50.0)
         print("Withdrew 50.0 Gold.")
 
         # Overdraft Check
         with self.assertRaises(ValueError):
-            bank.withdraw(currency, 100.0)
+            bank.withdraw(None, 100.0)
         print("Overdraft (withdraw 100 from 50) correctly raised ValueError.")
 
         # Verify Balance persistence

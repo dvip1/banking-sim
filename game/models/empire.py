@@ -1,6 +1,6 @@
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship, Session
 from sqlalchemy import ForeignKey
-from typing import List, TYPE_CHECKING
+from typing import List, TYPE_CHECKING, Optional
 
 from ..database import Base
 
@@ -28,9 +28,13 @@ class Empire(Base):
     balances: Mapped[List["EmpireBalance"]] = relationship(back_populates="empire", cascade="all, delete-orphan")
     bank: Mapped["Bank"] = relationship(back_populates="empire", uselist=False, cascade="all, delete-orphan")
 
-    def __init__(self, name: str, game_id: int):
+    def __init__(self, name: str, game_id: int, session: Optional[Session] = None):
         self.name = name
         self.game_id = game_id
+        self.add_bank_if_not_exists(session)
+        self.happiness = 1.0
+        self.population = 1
+
         
     @property
     def researched_assets(self) -> List["Asset"]:
@@ -56,6 +60,14 @@ class Empire(Base):
         # keeping it simple for now, using population as workers
         self.population = max(0, self.population)
         return self.population   
+    
+    def add_bank_if_not_exists(self, session: Optional[Session] = None):
+        from .bank import Bank
+        if not self.bank:
+            self.bank = Bank(empire_id=self.id, session=session)
+        elif session is not None:
+            self.bank._session = session
+        return self.bank
 
     @property
     def total_wealth(self) -> float:
@@ -64,8 +76,7 @@ class Empire(Base):
         Assumes that the baseline currency has exchange_rate = 1.0 (or logic handles conversion relative to it).
         Row-level calculation: balance.amount * balance.currency.exchange_rate
         """
-        return sum(b.amount * b.currency.exchange_rate for b in self.balances)
-    
+        return sum(b.amount * b.currency.exchange_rate for b in self.balances)    
     
     # modify_gold removed/commented out as it requires session/currency access. 
     # Logic should be handled by a service or controller.
