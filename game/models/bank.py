@@ -93,5 +93,4 @@ class Bank(Base):
     
     def get_balance(self, currency: Optional["Currency"], session: Optional[Session] = None) -> float:
         return self._get_balance(currency, session).amount    
-
     

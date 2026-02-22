@@ -50,4 +50,15 @@ class CurrencyService:
         for balance in empire.balances:
             total_wealth += balance.amount * balance.currency.exchange_rate
         return total_wealth / empire.population
+
+    @staticmethod
+    def per_capita_currency(empire: "Empire", currency: Currency) -> float:
+        """
+        Calculates the per capita wealth of an empire in a specific currency.
+        """
+        for balance in empire.balances:
+            if balance.currency_id == currency.id:
+                return (balance.amount * balance.currency.exchange_rate) / empire.population
+        return 0.0
+
     

@@ -2,7 +2,6 @@ from sqlalchemy import select
 
 from .models.empire import Empire
 from .models.game import Game as GameModel
-from .database import SessionLocal, Base, engine
 
 class Main:
     def __init__(self, name, session):
@@ -41,15 +40,18 @@ class Main:
         end_game = 'e'
         while next_turn != end_game:
             print(f"Turn {self.model.turn_number}:")
-            next_turn = input("Press 'n' for next turn, 'e' to end game: ").lower()
+            next_turn = input("Press 'n' for next turn, 'a' to create assets,'e' to end game: ").lower()
             if next_turn == 'n':
                 self.model.next_turn()
                 self.empire.bank.deposit(None, 5.0000, session=self.session)  # Deposit 5 gold each turn
                 self.session.commit()  
             elif next_turn == 'e':
                 print("Ending game. Thanks for playing!")
+            elif next_turn == 'a':
+                asset_name = input("Enter asset name: ")
+                base_cost = float(input("Enter asset base cost: "))
+                self.empire.new_asset(asset_name, base_cost)
+                self.session.commit()
+                print(f"Asset '{asset_name}' created with base cost {base_cost}.")
             else:
                 print("Invalid input, please try again.")
-
-
-    

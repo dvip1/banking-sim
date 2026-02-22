@@ -3,6 +3,7 @@ from sqlalchemy import ForeignKey
 from typing import List, TYPE_CHECKING, Optional
 
 from ..database import Base
+from ..services.currency_service import CurrencyService
 
 if TYPE_CHECKING:
     from .game import Game
@@ -10,6 +11,7 @@ if TYPE_CHECKING:
     from .currency import Currency
     from .balance import EmpireBalance
     from .bank import Bank
+    from ..services.currency_service import CurrencyService
 
 class Empire(Base): 
     __tablename__ = "empires"
@@ -77,6 +79,7 @@ class Empire(Base):
         Row-level calculation: balance.amount * balance.currency.exchange_rate
         """
         return sum(b.amount * b.currency.exchange_rate for b in self.balances)    
+    
     
     # modify_gold removed/commented out as it requires session/currency access. 
     # Logic should be handled by a service or controller.
