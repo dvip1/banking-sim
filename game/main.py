@@ -34,6 +34,15 @@ class Main:
 
         if created:
             self.session.commit()
+    
+    def distribute_global_currency(self, empire: Empire):
+        turn = self.model.turn
+        amount = 5.0000  # Amount of global currency to distribute each turn
+        if turn <100:
+            empire.bank.deposit(None, amount, session=self.session)  # Deposit baseline currency
+        else:
+            print(f"Turn {turn}: No more global currency distribution.")
+        self.session.commit()
 
     def start(self):
         next_turn = 'n'
@@ -43,8 +52,7 @@ class Main:
             next_turn = input("Press 'n' for next turn, 'a' to create assets,'e' to end game: ").lower()
             if next_turn == 'n':
                 self.model.next_turn()
-                self.empire.bank.deposit(None, 5.0000, session=self.session)  # Deposit 5 gold each turn
-                self.session.commit()  
+                self.distribute_global_currency(self.empire)
             elif next_turn == 'e':
                 print("Ending game. Thanks for playing!")
             elif next_turn == 'a':

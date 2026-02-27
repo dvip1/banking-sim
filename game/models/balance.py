@@ -15,12 +15,12 @@ class EmpireBalance(Base):
     empire_id: Mapped[int] = mapped_column(ForeignKey("empires.id"), primary_key=True)
     currency_id: Mapped[int] = mapped_column(ForeignKey("currencies.id"), primary_key=True)
     amount: Mapped[float] = mapped_column(default=0.0)
-
+    domestic_wealth: Mapped[float] = mapped_column(default=0.0)
     empire: Mapped["Empire"] = relationship(back_populates="balances")
     currency: Mapped["Currency"] = relationship()
 
     def __repr__(self):
-        return f"<EmpireBalance(empire={self.empire_id}, currency={self.currency_id}, amount={self.amount})>"
+        return f"<EmpireBalance(empire={self.empire_id}, currency={self.currency_id}, amount={self.amount}, domestic_wealth={self.domestic_wealth})>"
     
       
 

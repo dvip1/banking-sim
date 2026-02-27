@@ -45,22 +45,6 @@ class Bank(Base):
             raise ValueError("Baseline currency is required")
         return baseline
 
-    def _get_balance(self, currency: Optional["Currency"], session: Optional[Session]) -> "EmpireBalance":
-        resolved_session = session or getattr(self, "_session", None)
-        currency = self._resolve_currency(currency, resolved_session)
-        for balance in self.empire.balances:
-            if balance.currency_id == currency.id:
-                return balance
-
-        from .balance import EmpireBalance
-        new_balance = EmpireBalance(
-            empire=self.empire,
-            currency=currency,
-            amount=0
-        )
-        self.empire.balances.append(new_balance)
-        return new_balance
-
     def deposit(self, currency: Optional["Currency"], amount: float, session: Optional[Session] = None):
         if amount < 0:
             raise ValueError("Deposit amount must be positive")
@@ -93,4 +77,54 @@ class Bank(Base):
     
     def get_balance(self, currency: Optional["Currency"], session: Optional[Session] = None) -> float:
         return self._get_balance(currency, session).amount    
+    
+    def _get_balance(self, currency: Optional["Currency"], session: Optional[Session]) -> "EmpireBalance":
+        resolved_session = session or getattr(self, "_session", None)
+        currency = self._resolve_currency(currency, resolved_session)
+        for balance in self.empire.balances:
+            if balance.currency_id == currency.id:
+                return balance
+
+        from .balance import EmpireBalance
+        new_balance = EmpireBalance(
+            empire=self.empire,
+            currency=currency,
+            amount=0.0,
+            domestic_wealth=1.0 # Explicitly setting your new default
+        )
+        self.empire.balances.append(new_balance)
+        return new_balance
+
+    def pay_wages(self, currency: Optional["Currency"], amount: float, session: Optional[Session] = None) -> float:
+        """Transfers money from the State Treasury to the Domestic Economy."""
+        if amount < 0:
+            raise ValueError("Wage amount must be positive")
+
+        balance = self._get_balance(currency, session)
+        
+        if balance.amount < amount:
+            raise ValueError("Insufficient state funds to pay wages")
+
+        balance.amount -= amount
+        balance.domestic_wealth += amount
+        return balance.domestic_wealth
+
+    def collect_taxes(self, currency: Optional["Currency"], amount: float, session: Optional[Session] = None) -> float:
+        """Transfers money from the Domestic Economy back to the State Treasury."""
+        if amount < 0:
+            raise ValueError("Tax/Consumption amount must be positive")
+
+        balance = self._get_balance(currency, session)
+        
+        if balance.domestic_wealth < amount:
+            # If the population can't pay, they might starve or riot!
+            raise ValueError("Insufficient domestic wealth to pay taxes or consume assets")
+
+        balance.domestic_wealth -= amount
+        balance.amount += amount
+        return balance.amount
+
+    def get_domestic_wealth(self, currency: Optional["Currency"], session: Optional[Session] = None) -> float:
+        """Returns the population's holdings for a specific currency."""
+        return self._get_balance(currency, session).domestic_wealth
     

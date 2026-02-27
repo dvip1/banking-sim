@@ -79,7 +79,3 @@ class Empire(Base):
         Row-level calculation: balance.amount * balance.currency.exchange_rate
         """
         return sum(b.amount * b.currency.exchange_rate for b in self.balances)    
-    
-    
-    # modify_gold removed/commented out as it requires session/currency access. 
-    # Logic should be handled by a service or controller.

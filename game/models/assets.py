@@ -4,6 +4,7 @@ import random
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey
 from typing import TYPE_CHECKING
+from game.data.assets_data import AssetCategory
 
 from ..database import Base
 
@@ -17,7 +18,7 @@ class Asset(Base):
     empire_id: Mapped[int] = mapped_column(ForeignKey("empires.id"))
     name: Mapped[str]
     base_cost: Mapped[float]
-    
+    category: Mapped[AssetCategory]
     # We can keep uuid as a separate column if needed, or relying on int ID.
     # The original code had self.id = str(uuid.uuid4())[:8]
     # Let's keep a public_id for that.
@@ -39,14 +40,15 @@ class Asset(Base):
     
     empire: Mapped["Empire"] = relationship(back_populates="assets")
 
-    def __init__(self, name:str, base_cost:float, empire_id: int):
+    def __init__(self, name:str, base_cost:float, empire_id: int, category: AssetCategory = AssetCategory.SUSTENANCE):
         self.name = name
         self.base_cost = base_cost
         self.empire_id = empire_id
         self.predict_value = self._gaussian_float(base_cost*0.6, base_cost*1.5)
-        # Defaults handled by mapped_column or here
         self.is_researched = False
         self.research_progress = 0.0
+        self.category = category
+
 
     def __repr__(self):
         status = "Researched" if self.is_researched else f"Researching ({self.research_progress:.1%})"

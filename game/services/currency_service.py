@@ -44,21 +44,28 @@ class CurrencyService:
     @staticmethod
     def per_capita_all_currencies(empire: "Empire") -> float:
         """
-        Calculates the per capita wealth of an empire across all its currencies.
+        Calculates the per capita wealth of an empire across all its currencies,
+        using the DOMESTIC wealth (population's money).
         """
+        if empire.population <= 0:
+            return 0.0
+            
         total_wealth = 0
         for balance in empire.balances:
-            total_wealth += balance.amount * balance.currency.exchange_rate
+            total_wealth += balance.domestic_wealth * balance.currency.exchange_rate
         return total_wealth / empire.population
 
     @staticmethod
     def per_capita_currency(empire: "Empire", currency: Currency) -> float:
         """
-        Calculates the per capita wealth of an empire in a specific currency.
+        Calculates the per capita wealth of an empire in a specific currency,
+        using the DOMESTIC wealth (population's money).
         """
+        if empire.population <= 0:
+            return 0.0
+            
         for balance in empire.balances:
             if balance.currency_id == currency.id:
-                return (balance.amount * balance.currency.exchange_rate) / empire.population
+                # Changed from balance.amount to balance.domestic_wealth
+                return (balance.domestic_wealth * balance.currency.exchange_rate) / empire.population
         return 0.0
-
-    
