@@ -5,3 +5,10 @@ class AssetCategory(enum.Enum):
     HEALTHCARE = "healthcare" # Medicine. Increases population growth.
     LUXURY = "luxury"         # Electronics/Art. Massive Happiness boost, no pop change.
     CONTRABAND = "contraband" # Weapons/Vices. High tax revenue, but DECREASES population.
+
+
+class AssetStages(enum.Enum):
+    DISCOVERED = "discovered" 
+    RESEARCHING = "researching"
+    RESEARCHED = "researched"
+    IN_PRODUCTION = "in_production"
