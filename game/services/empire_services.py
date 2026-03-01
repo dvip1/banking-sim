@@ -41,7 +41,7 @@ class EmpireService:
         """
 
         if currency is None:
-            raise ValueError("Currency must be provided for assets")
+            currency = Bank._resolve_currency(None, self.session)
         bank = empire.bank
         if bank.get_balance(currency, session=self.session) < base_cost:
             raise ValueError("Insufficient funds to create asset")

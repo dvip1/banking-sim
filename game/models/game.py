@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column, relationship, Session
 from typing import List, Optional
 from ..database import Base, SessionLocal, engine
 from .empire import Empire
@@ -30,5 +30,11 @@ class Game(Base):
         if empire not in self.empires:
             self.empires.append(empire)
         return empire
-    
 
+    def distribute_global_currency(self, empire: Empire, session: Optional[Session] = None):
+        turn = self.turn
+        amount = 5.0000  # Amount of global currency to distribute each turn
+        if turn <100:
+            empire.bank.deposit(None, amount, session=session)  # Deposit baseline currency
+        else:
+            print(f"Turn {turn}: No more global currency distribution.")
